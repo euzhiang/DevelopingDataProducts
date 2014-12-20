@@ -1,0 +1,90 @@
+---
+title       : Developing Data Products Project
+subtitle    : Impact of amount of training data on accuracy of prediction algorithm
+author      : 
+job         : 
+framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : []            # {mathjax, quiz, bootstrap}
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides
+---
+
+## Background
+
+* Purpose of this application is to determine the impact of the amount of training data on the accuracy of the prediction algorithm. 
+* The prediction algorithm used is based on the random forest machine learning method using the spam dataset.
+* User can choose any value between 1% to 99% to be used as training data and the rest of the data would be used for testing. 
+* The confusion matrix would be shown for the test data.
+
+
+--- 
+
+## Results for 1% and 10%
+```{r, echo=FALSE, cache=FALSE, warning=FALSE, results='hide', message=FALSE }
+library(shiny)
+library(caret)
+library(kernlab)
+library(randomForest)
+```
+
+1% of data used as training data
+```{r, echo=FALSE, cache=FALSE, warning=FALSE}
+data(spam)
+set.seed(999)
+prob=0.01
+inTrain<-createDataPartition(y=spam$type, p=prob, list=FALSE)
+training<-spam[inTrain,]
+testing<-spam[-inTrain,]
+modelFit<-randomForest(type ~., data=training)
+predictions<-predict(modelFit, newdata=testing)
+confusionMatrix(predictions, testing$type)$overall
+```
+
+10% of data used as training data
+```{r, echo=FALSE, cache=FALSE, warning=FALSE}
+set.seed(999)
+prob=0.1
+inTrain<-createDataPartition(y=spam$type, p=prob, list=FALSE)
+training<-spam[inTrain,]
+testing<-spam[-inTrain,]
+modelFit<-randomForest(type ~., data=training)
+predictions<-predict(modelFit, newdata=testing)
+confusionMatrix(predictions, testing$type)$overall
+```
+
+---
+
+## Results for 60% and 90%
+60% of data used as training data
+```{r, echo=FALSE, cache=FALSE, warning=FALSE}
+set.seed(999)
+prob=0.6
+inTrain<-createDataPartition(y=spam$type, p=prob, list=FALSE)
+training<-spam[inTrain,]
+testing<-spam[-inTrain,]
+modelFit<-randomForest(type ~., data=training)
+predictions<-predict(modelFit, newdata=testing)
+confusionMatrix(predictions, testing$type)$overall
+```
+
+90% of data used as training data
+```{r, echo=FALSE, cache=FALSE, warning=FALSE}
+set.seed(999)
+prob=0.9
+inTrain<-createDataPartition(y=spam$type, p=prob, list=FALSE)
+training<-spam[inTrain,]
+testing<-spam[-inTrain,]
+modelFit<-randomForest(type ~., data=training)
+predictions<-predict(modelFit, newdata=testing)
+confusionMatrix(predictions, testing$type)$overall
+```
+
+---
+## Conclusion
+* If too little data is used for training, the accuracy would be low.
+* If too much data is used for training, then the user may not be sure that the algorithm will work equally well on other data sets
+* From the results shown, 60% of the data used for training and 40% of the data used for testing works reasonably well.
+
+
